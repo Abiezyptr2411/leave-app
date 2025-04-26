@@ -56,9 +56,14 @@ class CutiController extends Controller
 
     public function list(Request $request)
     {
-        if (!session('user_id')) return redirect('/login');
+       if (!session('user_id')) return redirect('/login');
+       $role = session('role'); 
 
-        $query = Cuti::where('user_id', session('user_id'));
+        $query = Cuti::query();
+
+        if ($role != 1) {
+            $query->where('user_id', session('user_id'));
+        }
 
         if ($request->has('search') && $request->search != '') {
             $query->where('alasan', 'like', '%' . $request->search . '%');
@@ -328,5 +333,4 @@ class CutiController extends Controller
 
         return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
     }
-
 }

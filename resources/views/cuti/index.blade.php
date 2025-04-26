@@ -143,11 +143,13 @@
           <i class="bi bi-file-earmark-spreadsheet"></i> Spreadsheet
         </button>
         <ul class="dropdown-menu">
+          @if(session('role') != 1) 
           <li>
             <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#importModal">
               <i class="bi bi-upload me-2"></i> Import
             </a>
           </li>
+          @endif
           <li>
             <a id="exportExcelBtn" class="dropdown-item">
               <i class="bi bi-file-earmark-excel me-2"></i> Cetak Excel
@@ -162,9 +164,11 @@
       </div>
     </div>
 
+    @if(session('role') != 1) 
     <button type="button" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#cutiModal">
       <i class="bi bi-plus-circle me-1"></i> Ajukan Cuti
     </button>
+    @endif
   </form>
 
   <!-- Tabel Cuti -->
