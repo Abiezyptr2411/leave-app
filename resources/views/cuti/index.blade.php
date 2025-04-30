@@ -210,12 +210,6 @@
                     <i class="bi bi-file-earmark-pdf me-1"></i>Cetak Bukti Cuti
                 </a>
               @endif
-
-              @if($status == 'pending' && session('role') == 1)
-                  <a href="{{ route('cuti.approve', $c->id) }}" class="btn btn-outline-secondary btn-sm ms-2">
-                      <i class="bi bi-check-circle me-1"></i>Approve
-                  </a>
-              @endif
           </td>
         </tr>
         @empty
