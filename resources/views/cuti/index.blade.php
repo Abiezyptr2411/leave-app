@@ -177,15 +177,18 @@
     <table class="table table-bordered table-hover align-middle">
       <thead class="table-light">
         <tr>
+          <th>Nama Lengkap</th>
           <th>Alasan</th>
           <th>Tgl Mulai</th>
           <th>Tgl Selesai</th>
           <th>Status</th>
+          <th>Aksi</th>
         </tr>
       </thead>
       <tbody>
         @forelse($cutis as $c)
         <tr>
+          <td>{{ $c->user->name ?? '-' }}</td>
           <td>{{ $c->alasan }}</td>
           <td>{{ \Carbon\Carbon::parse($c->tanggal_mulai)->format('d M Y') }}</td>
           <td>{{ \Carbon\Carbon::parse($c->tanggal_selesai)->format('d M Y') }}</td>
@@ -200,6 +203,19 @@
               $dot = "<span class='dot'></span>";
             @endphp
             <span class="badge-status {{ $badge }}">{!! $dot !!} {{ ucfirst($status) }}</span>
+          </td>
+          <td>
+              @if($status == 'disetujui')
+                <a href="{{ route('cuti.show', $c->id) }}" class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-file-earmark-pdf me-1"></i>Cetak Bukti Cuti
+                </a>
+              @endif
+
+              @if($status == 'pending' && session('role') == 1)
+                  <a href="{{ route('cuti.approve', $c->id) }}" class="btn btn-outline-secondary btn-sm ms-2">
+                      <i class="bi bi-check-circle me-1"></i>Approve
+                  </a>
+              @endif
           </td>
         </tr>
         @empty
