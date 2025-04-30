@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Cuti;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -59,15 +60,21 @@ class CutiController extends Controller
        if (!session('user_id')) return redirect('/login');
        $role = session('role'); 
 
-        $query = Cuti::query();
+       $query = Cuti::with('user');
 
-        if ($role != 1) {
-            $query->where('user_id', session('user_id'));
-        }
-
-        if ($request->has('search') && $request->search != '') {
-            $query->where('alasan', 'like', '%' . $request->search . '%');
-        }
+       if ($role != 1) {
+           $query->where('user_id', session('user_id'));
+       }
+       
+       if ($request->has('search') && $request->search != '') {
+           $searchTerm = $request->search;
+           $query->where(function ($q) use ($searchTerm) {
+               $q->where('alasan', 'like', '%' . $searchTerm . '%')
+                 ->orWhereHas('user', function ($q2) use ($searchTerm) {
+                     $q2->where('name', 'like', '%' . $searchTerm . '%');
+                 });
+           });
+        }     
 
         if ($request->has('status') && $request->status != '') {
             $query->where('status', $request->status);
@@ -137,6 +144,16 @@ class CutiController extends Controller
         ]);
 
         return redirect('/cuti')->with('success', 'Pengajuan cuti berhasil.');
+    }
+
+    public function show($id)
+    {
+        if (!session('user_id')) return redirect('/login');
+
+        $cuti = Cuti::with('user')->findOrFail($id);
+
+        $pdf = Pdf::loadView('cuti.pdf', compact('cuti'));
+        return $pdf->download('bukti_pengajuan_cuti_'.$cuti->id.'.pdf');
     }
 
     public function approve($id)
