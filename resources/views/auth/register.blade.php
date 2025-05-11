@@ -73,11 +73,12 @@
             </small>
         </div>
 
-        <form method="POST" action="/register">
+        <form method="POST" action="/register" enctype="multipart/form-data">
             @csrf
             <div class="mb-3">
                 <label class="form-label">Nama Lengkap</label>
                 <input type="text" name="name" class="form-control" required>
+                <input type="hidden" name="division" value="Building Management">
             </div>
 
             <div class="mb-3">
@@ -93,6 +94,11 @@
             <div class="mb-3">
                 <label class="form-label">Konfirmasi Password</label>
                 <input type="password" name="password_confirmation" class="form-control" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Foto Karyawan</label>
+                <input type="file" name="photo" class="form-control">
             </div>
 
             <div class="d-grid">

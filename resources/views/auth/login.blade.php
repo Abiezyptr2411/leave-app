@@ -88,12 +88,12 @@
             </div>
         </form>
 
-        <div class="text-center mt-4">
+        <!-- <div class="text-center mt-4">
             <span class="text-muted">Belum punya akun?</span>
             <a href="/register" class="text-decoration-none fw-bold text-success ms-1">
                 Daftar Sekarang
             </a>
-        </div>
+        </div> -->
     </div>
 
 </body>

@@ -202,7 +202,6 @@
                 <th>Alasan Cuti</th>
                 <th>Tanggal Mulai</th>
                 <th>Tanggal Selesai</th>
-                <th>Status</th>
             </tr>
         </thead>
         <tbody>
@@ -210,7 +209,7 @@
                 <td>{{ $cuti->alasan }}</td>
                 <td>{{ \Carbon\Carbon::parse($cuti->tanggal_mulai)->format('d M Y') }}</td>
                 <td>{{ \Carbon\Carbon::parse($cuti->tanggal_selesai)->format('d M Y') }}</td>
-                <td>{{ ucfirst($cuti->status) }}</td>
+                <!-- <td>{{ ucfirst($cuti->status) }}</td> -->
             </tr>
         </tbody>
     </table>

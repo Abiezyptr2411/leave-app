@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Cuti;
+use App\Models\UploadedDocument;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -91,6 +92,61 @@ class CutiController extends Controller
         $cutis = $query->orderBy('created_at', 'desc')->get();
 
         return view('cuti.index', compact('cutis'));
+    }
+
+    public function uploadList(Request $request)
+    {
+        if (!session('user_id')) return redirect('/login');
+        $role = session('role'); 
+
+        $query = Cuti::with('user', 'uploadedDocuments'); 
+
+        if ($role != 1) {
+            $query->where('user_id', session('user_id'));
+        }
+
+        if ($request->has('search') && $request->search != '') {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('alasan', 'like', '%' . $searchTerm . '%')
+                ->orWhereHas('user', function ($q2) use ($searchTerm) {
+                    $q2->where('name', 'like', '%' . $searchTerm . '%');
+                });
+            });
+        }
+
+        $cutis = $query->orderBy('created_at', 'desc')->get();
+
+        return view('cuti.upload_list', compact('cutis'));
+    }
+
+    public function uploadDocument(Request $request, $cutiId)
+    {
+        if (!session('user_id')) return redirect('/login');
+
+        // Validasi file upload
+        $request->validate([
+            'file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+        ]);
+
+        $cuti = Cuti::findOrFail($cutiId);
+        $userId = session('user_id');
+
+        // Pastikan yang mengupload adalah admin atau user yang sama dengan cuti
+        if (session('role') != 1 && $cuti->user_id != $userId) {
+            return redirect()->back()->with('error', 'Akses ditolak.');
+        }
+
+        $file = $request->file('file');
+        $path = $file->storeAs('uploads/documents', $file->getClientOriginalName(), 'public');
+
+        UploadedDocument::create([
+            'cuti_id' => $cutiId,
+            'filename' => $file->getClientOriginalName(),
+            'filepath' => $path,
+        ]);
+
+        return redirect()->route('cuti.uploadList')->with('success', 'Dokumen berhasil diupload.');
     }
 
     public function create()

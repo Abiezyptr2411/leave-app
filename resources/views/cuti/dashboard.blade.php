@@ -101,8 +101,15 @@
 <!-- Sidebar -->
 <div class="sidebar">
   <h5 class="text-center mb-4">E-Leave | System App</h5>
-  <a href="/dashboard" class="nav-link active"><i class="bi bi-speedometer2"></i> Dashboard</a>
-  <a href="/cuti" class="nav-link"><i class="bi bi-receipt"></i> Leave Histories</a>
+  <a href="/dashboard" class="nav-link active"><i class="bi bi-bank2"></i> Dashboard</a>
+  <a href="/cuti" class="nav-link"><i class="bi bi-calendar2-check"></i> Leave Histories</a>
+
+  <!-- @if (session('role') == 3)
+    <a href="/document-upload" class="nav-link"><i class="bi bi-upload"></i> Document Upload</a>
+  @endif -->
+
+  <a href="/document-upload" class="nav-link"><i class="bi bi-upload"></i> Document Upload</a>
+
   <hr class="border-light mx-3">
   <a href="/logout" class="nav-link"><i class="bi bi-box-arrow-right"></i> Logout</a>
 </div>
@@ -151,22 +158,27 @@
     </div>
   </div>
 
-  <!-- Chart -->
+  <!-- Detail Karyawan -->
   <div class="row mt-4">
-    <div class="col-md-8">
-      <div class="card">
-        <div class="card-body">
-          <div id="transactionChart" style="height: 400px;"></div>
-          <div id="chartData"
-               data-labels='@json($chartData->pluck("status"))'
-               data-values='@json($chartData->pluck("total"))'>
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+         Detail Informasi Staff
+        </div>
+        <div class="card-body d-flex align-items-center">
+        <img src="{{ session('photo') ? asset('storage/' . session('photo')) : asset('img/default.png') }}"
+            alt="Foto Profil" class="rounded-circle me-4" width="100" height="100" style="object-fit: cover;">
+          <div>
+            <p class="mb-1 text-muted">Staff Name&nbsp;: <strong>{{ session('user_name') }}</strong></p>
+            <p class="mb-1 text-muted">Departure&nbsp;&nbsp;&nbsp;: <strong>{{ session('division') }}</strong></p>
+            <p class="mb-1 text-muted">Position&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <strong> {{ session('role') == 1 ? 'Team Leader' : 'Staff Building' }}</strong></p>
           </div>
         </div>
       </div>
     </div>
-    
+
     <!-- approval list -->
-    <div class="col-md-4">
+    <div class="col-md-6">
         <div class="card">
             <div class="card-header bg-primary text-white">
                 Riwayat Permohonan Cuti
@@ -215,6 +227,21 @@
             </div>
         </div>
     </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body">
+          <div id="transactionChart" style="height: 400px;"></div>
+          <div id="chartData"
+               data-labels='@json($chartData->pluck("status"))'
+               data-values='@json($chartData->pluck("total"))'>
+          </div>
+        </div>
+      </div>
+    </div>
 
   </div>
 </div>
@@ -230,40 +257,41 @@
     const values = $('#chartData').data('values');
     const numericValues = values.map(value => parseFloat(value));
 
-    Highcharts.chart('transactionChart', {
-      chart: {
-        type: 'bar'
-      },
-      title: {
-        text: 'Statistik Pengajuan Cuti (Berdasarkan Status)'
-      },
-      xAxis: {
-        categories: labels,
-        title: {
-          text: 'Status Cuti'
-        }
-      },
-      yAxis: {
-        title: {
-          text: 'Jumlah'
-        },
-        allowDecimals: false
-      },
-      tooltip: {
-        formatter: function () {
-          return '<b>' + this.x + '</b>: ' + this.y + ' cuti';
-        }
-      },
-      series: [{
-        name: 'Jumlah Cuti',
-        data: numericValues,
-        color: '#1976d2'
-      }],
-      credits: {
-        enabled: false
-      }
+    // Gabungkan labels dan values untuk pie chart
+    const pieData = labels.map((label, index) => {
+        return { name: label, y: numericValues[index] };
     });
-  });
+
+    Highcharts.chart('transactionChart', {
+        chart: {
+            type: 'pie'
+        },
+        title: {
+            text: 'Statistik Pengajuan Cuti (Berdasarkan Status)'
+        },
+        tooltip: {
+            pointFormat: '<b>{point.name}</b>: {point.y} cuti ({point.percentage:.1f}%)'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.y}'
+                }
+            }
+        },
+        series: [{
+            name: 'Jumlah Cuti',
+            colorByPoint: true,
+            data: pieData
+        }],
+        credits: {
+            enabled: false
+        }
+    });
+});
 </script>
 
 <script>

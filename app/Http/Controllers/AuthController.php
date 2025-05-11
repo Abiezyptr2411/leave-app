@@ -18,7 +18,13 @@ class AuthController extends Controller
     {
         $user = User::where('email', $request->email)->first();
         if ($user && Hash::check($request->password, $user->password)) {
-            session(['user_id' => $user->id, 'user_name' => $user->name, 'role' => $user->role]);
+            session([
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'role' => $user->role,
+                'division' => $user->division,
+                'photo' => $user->photo,
+            ]);  
             return redirect('/dashboard');
         }
         return back()->with('error', 'Email atau password salah');
@@ -35,16 +41,31 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6|confirmed',
+            'division' => 'required|string|max:255',
+            'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
+
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('photos', 'public');
+        }
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 0,
+            'photo' => $photoPath,
+            'division' => $request->division,
         ]);
 
-        session(['user_id' => $user->id, 'user_name' => $user->name, 'role' => $user->role]);
+        session([
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'role' => $user->role,
+            'division' => $user->division,
+            'photo' => $user->photo,
+        ]);        
 
         return redirect('/dashboard')->with('success', 'Pendaftaran berhasil. Selamat datang!');
     }

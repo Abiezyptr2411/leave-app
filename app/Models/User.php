@@ -6,7 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class User extends Model
 {
-    protected $fillable = ['name', 'email', 'password', 'role'];
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role',
+        'photo',      
+        'division',   
+    ];
+
     protected $hidden = ['password'];
 
     public function cuti()
