@@ -89,15 +89,8 @@
 <!-- Sidebar -->
 <div class="sidebar">
   <h5 class="text-center mb-4">E-Leave | System App</h5>
-  <a href="/dashboard" class="nav-link active"><i class="bi bi-bank2"></i> Dashboard</a>
-  <a href="/cuti" class="nav-link"><i class="bi bi-calendar2-check"></i> Leave Histories</a>
-
-  <!-- @if (session('role') == 3)
-    <a href="/document-upload" class="nav-link"><i class="bi bi-upload"></i> Document Upload</a>
-  @endif -->
-
-  <a href="/document-upload" class="nav-link"><i class="bi bi-upload"></i> Document Upload</a>
-
+  <a href="/dashboard" class="nav-link active"><i class="bi bi-speedometer2"></i> Dashboard</a>
+  <a href="/cuti" class="nav-link"><i class="bi bi-receipt"></i> Leave Histories</a>
   <hr class="border-light mx-3">
   <a href="/logout" class="nav-link"><i class="bi bi-box-arrow-right"></i> Logout</a>
 </div>
@@ -135,7 +128,8 @@
     <select name="status" class="form-select" style="max-width: 150px;">
       <option value="">Semua Status</option>
       <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Menunggu</option>
-      <option value="disetujui" {{ request('status') == 'disetujui' ? 'selected' : '' }}>Disetujui</option>
+      <option value="disetujui_lead" {{ request('status') == 'disetujui_lead' ? 'selected' : '' }}>Diproses ke Building Manager</option>
+      <option value="disetujui_bm" {{ request('status') == 'disetujui_bm' ? 'selected' : '' }}>Disetujui</option>
       <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
     </select>
     <input type="date" name="tanggal_mulai" class="form-control" value="{{ request('tanggal_mulai') }}" style="max-width: 180px;">
@@ -193,38 +187,40 @@
         </tr>
       </thead>
       <tbody>
-        @forelse($cutis as $c)
-        <tr>
-          <td>{{ $c->user->name ?? '-' }}</td>
-          <td>{{ $c->alasan }}</td>
-          <td>{{ \Carbon\Carbon::parse($c->tanggal_mulai)->format('d M Y') }}</td>
-          <td>{{ \Carbon\Carbon::parse($c->tanggal_selesai)->format('d M Y') }}</td>
-          <td>
+    @forelse($cutis as $c)
+    <tr>
+        <td>{{ $c->user->name ?? '-' }}</td>
+        <td>{{ $c->alasan }}</td>
+        <td>{{ \Carbon\Carbon::parse($c->tanggal_mulai)->format('d M Y') }}</td>
+        <td>{{ \Carbon\Carbon::parse($c->tanggal_selesai)->format('d M Y') }}</td>
+        <td>
             @php
-              $status = strtolower($c->status);
-              $badge = match ($status) {
-                  'disetujui' => 'badge-success',
-                  'ditolak' => 'badge-danger',
-                  default => 'badge-warning',
-              };
-              $dot = "<span class='dot'></span>";
+            $status = strtolower($c->status_label);
+                $badge = match ($status) {
+                    'diproses ke building manager' => 'badge-danger',
+                    'disetujui' => 'badge-success',
+                    'ditolak' => 'badge-danger',
+                    'menunggu konfirmasi' => 'badge-warning',
+                    default => 'badge-secondary',
+                };
+                $dot = "<span class='dot'></span>";
             @endphp
             <span class="badge-status {{ $badge }}">{!! $dot !!} {{ ucfirst($status) }}</span>
-          </td>
-          <td>
-              @if($status == 'pending')
+        </td>
+        <td>
+            @if($status == 'menunggu konfirmasi')
                 <a href="{{ route('cuti.show', $c->id) }}" class="btn btn-outline-danger btn-sm">
                     <i class="bi bi-file-earmark-pdf me-1"></i>Cetak Bukti Cuti
                 </a>
-              @endif
-          </td>
-        </tr>
-        @empty
-        <tr>
-          <td colspan="4" class="text-center text-muted">Belum ada data cuti.</td>
-        </tr>
-        @endforelse
-      </tbody>
+            @endif
+        </td>
+    </tr>
+    @empty
+    <tr>
+        <td colspan="6" class="text-center text-muted">Belum ada data cuti.</td>
+    </tr>
+    @endforelse
+</tbody>
     </table>
   </div>
 </div>

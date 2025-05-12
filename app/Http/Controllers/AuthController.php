@@ -20,6 +20,7 @@ class AuthController extends Controller
         if ($user && Hash::check($request->password, $user->password)) {
             session([
                 'user_id' => $user->id,
+                'nik' => $user->nik,
                 'user_name' => $user->name,
                 'role' => $user->role,
                 'division' => $user->division,
@@ -50,6 +51,14 @@ class AuthController extends Controller
             $photoPath = $request->file('photo')->store('photos', 'public');
         }
 
+        $latestNik = User::orderBy('nik', 'desc')->value('nik');
+
+        if ($latestNik) {
+            $newNik = strval((int)$latestNik + 1);
+        } else {
+            $newNik = '101201';
+        }
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -57,15 +66,17 @@ class AuthController extends Controller
             'role' => 0,
             'photo' => $photoPath,
             'division' => $request->division,
+            'nik' => $newNik,
         ]);
 
         session([
             'user_id' => $user->id,
+            'nik' => $user->nik,
             'user_name' => $user->name,
             'role' => $user->role,
             'division' => $user->division,
             'photo' => $user->photo,
-        ]);        
+        ]);
 
         return redirect('/dashboard')->with('success', 'Pendaftaran berhasil. Selamat datang!');
     }

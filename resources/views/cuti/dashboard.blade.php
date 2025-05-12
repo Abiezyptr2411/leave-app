@@ -169,9 +169,14 @@
         <img src="{{ session('photo') ? asset('storage/' . session('photo')) : asset('img/default.png') }}"
             alt="Foto Profil" class="rounded-circle me-4" width="100" height="100" style="object-fit: cover;">
           <div>
+          <p class="mb-1 text-muted">Staff ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <strong>{{ session('nik') }}</strong></p>
             <p class="mb-1 text-muted">Staff Name&nbsp;: <strong>{{ session('user_name') }}</strong></p>
             <p class="mb-1 text-muted">Departure&nbsp;&nbsp;&nbsp;: <strong>{{ session('division') }}</strong></p>
-            <p class="mb-1 text-muted">Position&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <strong> {{ session('role') == 1 ? 'Team Leader' : 'Staff Building' }}</strong></p>
+            <p class="mb-1 text-muted">Position&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: 
+                <strong>
+                    {{ session('role') == 1 ? 'Team Leader' : (session('role') == 2 ? 'Building Manager' : 'Staff Building') }}
+                </strong>
+            </p>
           </div>
         </div>
       </div>
@@ -193,7 +198,7 @@
                             {{ \Carbon\Carbon::parse($cuti->tanggal_selesai)->format('d M Y') }}
                         </div>
                         <div class="mb-2">{{ $cuti->alasan }}</div>
-                        @if($role == 1)
+                        @if($role != 0)
                             <form action="{{ route('cuti.approve', $cuti->id) }}" method="POST" class="d-inline approve-form">
                                 @csrf
                                 <button type="button" class="btn btn-sm btn-approve" style="background-color: #e3f2fd; color: #1565c0;">
@@ -209,16 +214,10 @@
                             </form>
 
                         @else
-                        <span class="badge 
-                            @if($cuti->status == 'pending') bg-warning-soft 
-                            @elseif($cuti->status == 'disetujui') bg-success-soft 
-                            @elseif($cuti->status == 'ditolak') bg-danger-soft 
-                            @endif">
-                            @if($cuti->status == 'pending') Menunggu Konfirmasi
-                            @elseif($cuti->status == 'disetujui') Cuti Disetujui
-                            @elseif($cuti->status == 'ditolak') Cuti Tidak Disetujui
-                            @endif
+                        <span class="badge {{ $cuti->status_badge }}">
+                            {{ $cuti->status_label }}
                         </span>
+
                         @endif
                     </div>
                 @empty
