@@ -21,14 +21,25 @@ class CutiController extends Controller
 
         if (in_array($role, [1, 2])) {
             $totalCuti = Cuti::count();
-            $cutiDisetujui = Cuti::where('status', 'disetujui')->count();
+            $cutiDisetujui = Cuti::whereIn('status', ['disetujui_lead', 'disetujui_bm', 'disetujui'])->count();
             $cutiDitolak = Cuti::where('status', 'ditolak')->count();
             $cutiPending = Cuti::where('status', 'pending')->count();
 
-            $chartData = Cuti::selectRaw('status, COUNT(*) as total')
-                ->groupBy('status')
-                ->whereMonth('created_at', now()->month)
-                ->get();
+            $chartData = Cuti::selectRaw("
+                CASE
+                    WHEN status = 'disetujui_lead' THEN 'Disetujui oleh Lead'
+                    WHEN status = 'disetujui_bm' THEN 'Disetujui oleh Building Manager'
+                    WHEN status = 'disetujui' THEN 'Disetujui Final'
+                    WHEN status = 'ditolak' THEN 'Cuti Ditolak'
+                    WHEN status = 'pending' THEN 'Menunggu Konfirmasi'
+                    ELSE 'Status Tidak Dikenal'
+                END as status_label,
+                COUNT(*) as total
+            ")
+            ->whereMonth('created_at', now()->month)
+            ->groupBy('status_label')
+            ->get();
+
 
             $cutiPendingList = Cuti::latest()
                 ->where(function ($query) use ($role) {
@@ -41,14 +52,24 @@ class CutiController extends Controller
                 ->get();
         } else {
             $totalCuti = Cuti::where('user_id', $userId)->count();
-            $cutiDisetujui = Cuti::where('user_id', $userId)->where('status', 'disetujui')->count();
+            $cutiDisetujui = Cuti::where('user_id', $userId)->whereIn('status', ['disetujui_lead', 'disetujui_bm', 'disetujui'])->count();
             $cutiDitolak = Cuti::where('user_id', $userId)->where('status', 'ditolak')->count();
             $cutiPending = Cuti::where('user_id', $userId)->where('status', 'pending')->count();
 
             $chartData = Cuti::where('user_id', $userId)
-                ->selectRaw('status, COUNT(*) as total')
-                ->groupBy('status')
+                ->selectRaw("
+                    CASE
+                        WHEN status = 'disetujui_lead' THEN 'Diproses ke Building Manager'
+                        WHEN status = 'disetujui_bm' THEN 'Disetujui oleh Building Manager'
+                        WHEN status = 'disetujui' THEN 'Cuti Disetujui'
+                        WHEN status = 'ditolak' THEN 'Cuti Ditolak'
+                        WHEN status = 'pending' THEN 'Menunggu Konfirmasi'
+                        ELSE 'Status Tidak Dikenal'
+                    END as status_label,
+                    COUNT(*) as total
+                ")
                 ->whereMonth('created_at', now()->month)
+                ->groupBy('status_label')
                 ->get();
 
             $cutiPendingList = Cuti::where('user_id', $userId)
@@ -63,6 +84,9 @@ class CutiController extends Controller
                     $cuti->status_badge = 'bg-danger-soft';
                     break;
                 case 'disetujui_bm':
+                    $cuti->status_label = 'Disetujui oleh Building Manager';
+                    $cuti->status_badge = 'bg-success-soft';
+                    break;
                 case 'disetujui':
                     $cuti->status_label = 'Cuti Disetujui';
                     $cuti->status_badge = 'bg-success-soft';
@@ -88,7 +112,6 @@ class CutiController extends Controller
             'totalCuti', 'cutiDisetujui', 'cutiDitolak', 'cutiPending', 'chartData', 'cutiPendingList', 'role'
         ));
     }
-
 
     public function list(Request $request)
     {
@@ -183,35 +206,6 @@ class CutiController extends Controller
         return view('cuti.upload_list', compact('cutis'));
     }
 
-    // public function uploadDocument(Request $request, $cutiId)
-    // {
-    //     if (!session('user_id')) return redirect('/login');
-
-    //     // Validasi file upload
-    //     $request->validate([
-    //         'file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-    //     ]);
-
-    //     $cuti = Cuti::findOrFail($cutiId);
-    //     $userId = session('user_id');
-
-    //     // Pastikan yang mengupload adalah admin atau user yang sama dengan cuti
-    //     if (session('role') != 1 && $cuti->user_id != $userId) {
-    //         return redirect()->back()->with('error', 'Akses ditolak.');
-    //     }
-
-    //     $file = $request->file('file');
-    //     $path = $file->storeAs('uploads/documents', $file->getClientOriginalName(), 'public');
-
-    //     UploadedDocument::create([
-    //         'cuti_id' => $cutiId,
-    //         'filename' => $file->getClientOriginalName(),
-    //         'filepath' => $path,
-    //     ]);
-
-    //     return redirect()->route('cuti.uploadList')->with('success', 'Dokumen berhasil diupload.');
-    // }
-
     public function create()
     {
         if (!session('user_id')) return redirect('/login');
@@ -244,7 +238,7 @@ class CutiController extends Controller
             return redirect('/cuti')->with('error', 'Tanggal mulai tidak boleh lebih besar dari tanggal selesai.');
         }
 
-        // Validasi jika masih ada cuti pending (belum selesai)
+        // Validasi jika masih ada cuti pending 
         $masihPending = DB::table('cuti')
             ->where('user_id', $userId)
             ->where('status', 'pending')
@@ -254,7 +248,7 @@ class CutiController extends Controller
             return redirect('/cuti')->with('error', 'Masih ada pengajuan cuti yang pending. Harap tunggu sampai diproses.');
         }
 
-        // Validasi bentrok tanggal cuti (overlap)
+        // Validasi bentrok tanggal cuti 
         $bentrok = DB::table('cuti')
             ->where('user_id', $userId)
             ->whereIn('status', ['pending', 'disetujui']) 
@@ -272,7 +266,6 @@ class CutiController extends Controller
             return redirect('/cuti')->with('error', 'Masih ada pengajuan cuti yang aktif di tanggal tersebut.');
         }
 
-        // Simpan pengajuan cuti
         Cuti::create([
             'user_id' => $userId,
             'alasan' => $request->alasan,

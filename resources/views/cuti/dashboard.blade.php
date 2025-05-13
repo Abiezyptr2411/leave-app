@@ -116,18 +116,16 @@
 
 <!-- Main Content -->
 <div class="main-content">
-  <!-- Top Bar -->
   <div class="topbar">
     <div><strong>Dashboard</strong></div>
-    <div class="text-muted">Hallo, <b>{{ session('user_name') }}</b></div>
+    <div class="text-muted">Version 1.0.0</div>
   </div>
 
-  <!-- Alerts -->
   <div class="alert-orange mt-3">
-    <i class="bi bi-exclamation-triangle-fill"></i> One more step! Complete your registration <a href="#" class="text-white fw-bold">here</a>
+    Halo, {{ session('user_name') }} Selamat datang di aplikasi pengajuan cuti divisi Building Management</a>
   </div>
   <div class="alert-blue mt-2">
-    <i class="bi bi-bell-fill"></i> Participate in our research and enjoy a special incentive
+    <i class="bi bi-info-circle"></i> <b>Catatan:</b> Pengajuan cuti dapat dilakukan maksimal 14 hari sebelum tanggal pengajuan cuti kamu.
   </div>
 
   <!-- Statistics Section -->
@@ -140,6 +138,12 @@
     </div>
     <div class="col-md-3">
       <div class="statistics-card">
+        <div class="summary-value">{{ $cutiPending }}</div>
+        <div class="summary-label">Cuti Menunggu</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="statistics-card">
         <div class="summary-value">{{ $cutiDisetujui }}</div>
         <div class="summary-label">Cuti Disetujui</div>
       </div>
@@ -148,12 +152,6 @@
       <div class="statistics-card">
         <div class="summary-value">{{ $cutiDitolak }}</div>
         <div class="summary-label">Cuti Ditolak</div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="statistics-card">
-        <div class="summary-value">{{ $cutiPending }}</div>
-        <div class="summary-label">Cuti Menunggu</div>
       </div>
     </div>
   </div>
@@ -235,8 +233,8 @@
         <div class="card-body">
           <div id="transactionChart" style="height: 400px;"></div>
           <div id="chartData"
-               data-labels='@json($chartData->pluck("status"))'
-               data-values='@json($chartData->pluck("total"))'>
+              data-labels='@json($chartData->pluck("status_label"))'
+              data-values='@json($chartData->pluck("total"))'>
           </div>
         </div>
       </div>
@@ -255,8 +253,6 @@
     const labels = $('#chartData').data('labels');
     const values = $('#chartData').data('values');
     const numericValues = values.map(value => parseFloat(value));
-
-    // Gabungkan labels dan values untuk pie chart
     const pieData = labels.map((label, index) => {
         return { name: label, y: numericValues[index] };
     });
@@ -290,7 +286,7 @@
             enabled: false
         }
     });
-});
+  });
 </script>
 
 <script>
