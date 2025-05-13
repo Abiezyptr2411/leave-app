@@ -9,10 +9,10 @@ class UploadedDocument extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['cuti_id', 'filename', 'filepath'];
+    protected $fillable = ['filename', 'filepath'];
 
-    public function cuti()
-    {
-        return $this->belongsTo(Cuti::class);
-    }
+    // public function cuti()
+    // {
+    //     return $this->belongsTo(Cuti::class);
+    // }
 }

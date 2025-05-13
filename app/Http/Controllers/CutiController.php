@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Cuti;
+use App\Models\UploadedDocument;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -19,7 +20,7 @@ class CutiController extends Controller
         $userId = session('user_id');
         $role = session('role');
 
-        if (in_array($role, [1, 2])) {
+        if (in_array($role, [1, 2, 3])) {
             $totalCuti = Cuti::count();
             $cutiDisetujui = Cuti::whereIn('status', ['disetujui_lead', 'disetujui_bm', 'disetujui'])->count();
             $cutiDitolak = Cuti::where('status', 'ditolak')->count();
@@ -121,7 +122,7 @@ class CutiController extends Controller
     
         $query = Cuti::with('user');
     
-        if ($role == 1 || $role == 2) {
+        if ($role == 1 || $role == 2 || $role == 3) {
             $query->whereIn('status', ['pending', 'disetujui_lead', 'disetujui_bm', 'ditolak']);
         } else {
             $query->where('user_id', $userId);
@@ -187,7 +188,7 @@ class CutiController extends Controller
 
         $query = Cuti::with('user', 'uploadedDocuments'); 
 
-        if ($role != 1) {
+        if ($role != 1 && $role != 3) {  
             $query->where('user_id', session('user_id'));
         }
 
@@ -202,8 +203,27 @@ class CutiController extends Controller
         }
 
         $cutis = $query->orderBy('created_at', 'desc')->get();
+        $uploadedDocuments = UploadedDocument::all(); // Ambil semua dokumen yang diupload
 
-        return view('cuti.upload_list', compact('cutis'));
+        return view('cuti.upload', compact('cutis', 'uploadedDocuments')); // Kirimkan kedua variabel
+    }
+
+    public function uploadFile(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:pdf,jpg,jpeg,png|max:2048'
+        ]);
+
+        $file = $request->file('file');
+        $filename = uniqid() . '_' . $file->getClientOriginalName();
+        $path = $file->storeAs('dokumen_cuti', $filename, 'public');
+
+        UploadedDocument::create([
+            'filepath' => $path,
+            'filename' => $filename
+        ]);
+
+        return redirect()->back()->with('success', 'Dokumen berhasil diunggah.');
     }
 
     public function create()

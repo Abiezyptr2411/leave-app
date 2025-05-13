@@ -13,5 +13,10 @@ class Cuti extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function uploadedDocuments()
+    {
+        return $this->hasMany(UploadedDocument::class, 'cuti_id');
+    }
 }
 

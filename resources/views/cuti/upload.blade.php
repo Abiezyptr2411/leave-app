@@ -89,25 +89,35 @@
 <!-- Sidebar -->
 <div class="sidebar">
   <h5 class="text-center mb-4">E-Leave | System App</h5>
-  <a href="/dashboard" class="nav-link active"><i class="bi bi-bank2"></i> Dashboard</a>
-  <a href="/cuti" class="nav-link"><i class="bi bi-calendar2-check"></i> Leave Histories</a>
 
-  <!-- @if (session('role') == 3)
-    <a href="/document-upload" class="nav-link"><i class="bi bi-upload"></i> Document Upload</a>
-  @endif -->
+  <a href="/dashboard" class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}">
+    <i class="bi bi-bank2"></i> Dashboard
+  </a>
 
-  <a href="/document-upload" class="nav-link"><i class="bi bi-upload"></i> Document Upload</a>
+  <a href="/cuti" class="nav-link {{ request()->is('cuti') ? 'active' : '' }}">
+    <i class="bi bi-calendar2-check"></i> Leave Histories
+  </a>
+
+  @if (session('role') == 3)
+    <a href="/document-upload" class="nav-link {{ request()->is('document-upload') ? 'active' : '' }}">
+      <i class="bi bi-upload"></i> Document Upload
+    </a>
+  @endif
 
   <hr class="border-light mx-3">
-  <a href="/logout" class="nav-link"><i class="bi bi-box-arrow-right"></i> Logout</a>
+
+  <a href="/logout" class="nav-link">
+    <i class="bi bi-box-arrow-right"></i> Logout
+  </a>
 </div>
+
 
 <!-- Main Content -->
 <div class="main-content">
   <!-- Top Bar -->
   <div class="topbar">
-    <div><strong>Selamat datang, {{ session('user_name') }}</strong></div>
-    <div class="text-muted">cuti@sistem.com</div>
+    <div><strong>Bukti Pengajuan Cuti</strong></div>
+    <div class="text-muted">Version 1.0.0</div>
   </div>
 
   <!-- Flash Message -->
@@ -140,42 +150,18 @@
     </select>
     <input type="date" name="tanggal_mulai" class="form-control" value="{{ request('tanggal_mulai') }}" style="max-width: 180px;">
     <input type="date" name="tanggal_selesai" class="form-control" value="{{ request('tanggal_selesai') }}" style="max-width: 180px;">
+    <div class="d-flex align-items-center gap-2">
     <button class="btn" style="background-color: #ff6f00; color: white; border-color: #ff6f00;">
         <i class="bi bi-funnel"></i> Pencarian
     </button>
-    
-    <div class="d-flex justify-content-end">
-      <div class="btn-group">
-        <button type="button" class="btn btn-success dropdown-toggle text-white" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="bi bi-file-earmark-spreadsheet"></i> Spreadsheet
-        </button>
-        <ul class="dropdown-menu">
-          @if(session('role') != 1) 
-          <li>
-            <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#importModal">
-              <i class="bi bi-upload me-2"></i> Import
-            </a>
-          </li>
-          @endif
-          <li>
-            <a id="exportExcelBtn" class="dropdown-item">
-              <i class="bi bi-file-earmark-excel me-2"></i> Cetak Excel
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item" href="{{ url('/cuti/template') }}">
-              <i class="bi bi-file-earmark-arrow-down me-2"></i> Download Template
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
 
     @if(session('role') != 1) 
-    <button type="button" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#cutiModal">
-      <i class="bi bi-plus-circle me-1"></i> Ajukan Cuti
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+      <i class="bi bi-plus-circle"></i> Upload Bukti Cuti Karyawan
     </button>
     @endif
+</div>
+
   </form>
 
   <!-- Tabel Cuti -->
@@ -184,44 +170,27 @@
     <table class="table table-bordered table-hover align-middle">
       <thead class="table-light">
         <tr>
-          <th>Nama Lengkap</th>
-          <th>Alasan</th>
-          <th>Tgl Mulai</th>
-          <th>Tgl Selesai</th>
-          <th>Status</th>
+          <th>Nama File</th>
+          <th>Lokasi File</th>
+          <th>Tanggal Upload</th>
           <th>Aksi</th>
         </tr>
       </thead>
       <tbody>
-        @forelse($cutis as $c)
+        @forelse($uploadedDocuments as $document)
         <tr>
-          <td>{{ $c->user->name ?? '-' }}</td>
-          <td>{{ $c->alasan }}</td>
-          <td>{{ \Carbon\Carbon::parse($c->tanggal_mulai)->format('d M Y') }}</td>
-          <td>{{ \Carbon\Carbon::parse($c->tanggal_selesai)->format('d M Y') }}</td>
+          <td>{{ $document->filename }}</td>
+          <td>{{ $document->filepath }}</td>
+          <td>{{ \Carbon\Carbon::parse($document->created_at)->format('d M Y h:i:s') }}</td>
           <td>
-            @php
-              $status = strtolower($c->status);
-              $badge = match ($status) {
-                  'disetujui' => 'badge-success',
-                  'ditolak' => 'badge-danger',
-                  default => 'badge-warning',
-              };
-              $dot = "<span class='dot'></span>";
-            @endphp
-            <span class="badge-status {{ $badge }}">{!! $dot !!} {{ ucfirst($status) }}</span>
-          </td>
-          <td>
-              @if($status == 'pending')
-                <a href="{{ route('cuti.show', $c->id) }}" class="btn btn-outline-danger btn-sm">
-                    <i class="bi bi-file-earmark-pdf me-1"></i>Cetak Bukti Cuti
-                </a>
-              @endif
+              <a href="{{ asset('storage/' . $document->filepath) }}" class="btn btn-outline-primary btn-sm" target="_blank">
+                  <i class="bi bi-download me-1"></i>Download
+              </a>
           </td>
         </tr>
         @empty
         <tr>
-          <td colspan="4" class="text-center text-muted">Belum ada data cuti.</td>
+          <td colspan="4" class="text-center text-muted">Belum ada dokumen yang diupload.</td>
         </tr>
         @endforelse
       </tbody>
@@ -230,39 +199,25 @@
 </div>
 
 <!-- Modal Ajukan Cuti -->
-<div class="modal fade" id="cutiModal" tabindex="-1" aria-labelledby="cutiModalLabel" aria-hidden="true">
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
   <div class="modal-dialog">
-    <form method="POST" action="/cuti" class="modal-content">
+    <form method="POST" action="{{ route('document.uploadFile') }}" enctype="multipart/form-data" class="modal-content">
       @csrf
       <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title" id="cutiModalLabel"><i class="bi bi-calendar-plus me-2"></i>Ajukan Cuti</h5>
+        <h5 class="modal-title" id="uploadModalLabel"><i class="bi bi-files me-2"></i>Upload Bukti Cuti Karyawan</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body p-4">
         <div class="mb-3">
-          <label for="alasan" class="form-label">Alasan Cuti</label>
+          <label for="file" class="form-label">Lampirkan Bukti</label>
           <div class="input-group">
-            <span class="input-group-text"><i class="bi bi-chat-left-text"></i></span>
-            <input type="text" name="alasan" id="alasan" class="form-control" placeholder="Contoh: Urusan keluarga, sakit, dll" required>
-          </div>
-        </div>
-        <div class="mb-3">
-          <label for="tanggal_mulai" class="form-label">Tanggal Mulai</label>
-          <div class="input-group">
-            <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
-            <input type="date" name="tanggal_mulai" id="tanggal_mulai" class="form-control" required>
-          </div>
-        </div>
-        <div class="mb-3">
-          <label for="tanggal_selesai" class="form-label">Tanggal Selesai</label>
-          <div class="input-group">
-            <span class="input-group-text"><i class="bi bi-calendar-check"></i></span>
-            <input type="date" name="tanggal_selesai" id="tanggal_selesai" class="form-control" required>
+            <span class="input-group-text"><i class="bi bi-file-earmark"></i></span>
+            <input type="file" name="file" id="file" class="form-control" required>
           </div>
         </div>
         <div class="alert alert-info d-flex align-items-center mt-3" role="alert">
           <i class="bi bi-info-circle me-2"></i>
-          Mohon pastikan tanggal dan alasan cuti sudah benar sebelum dikirim.
+          Mohon pastikan file yang diunggah sudah benar sebelum dikirim.
         </div>
       </div>
       <div class="modal-footer">

@@ -101,18 +101,28 @@
 <!-- Sidebar -->
 <div class="sidebar">
   <h5 class="text-center mb-4">E-Leave | System App</h5>
-  <a href="/dashboard" class="nav-link active"><i class="bi bi-bank2"></i> Dashboard</a>
-  <a href="/cuti" class="nav-link"><i class="bi bi-calendar2-check"></i> Leave Histories</a>
 
-  <!-- @if (session('role') == 3)
-    <a href="/document-upload" class="nav-link"><i class="bi bi-upload"></i> Document Upload</a>
-  @endif -->
+  <a href="/dashboard" class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}">
+    <i class="bi bi-bank2"></i> Dashboard
+  </a>
 
-  <a href="/document-upload" class="nav-link"><i class="bi bi-upload"></i> Document Upload</a>
+  <a href="/cuti" class="nav-link {{ request()->is('cuti') ? 'active' : '' }}">
+    <i class="bi bi-calendar2-check"></i> Leave Histories
+  </a>
+
+  @if (session('role') == 3)
+    <a href="/document-upload" class="nav-link {{ request()->is('cuti/upload') ? 'active' : '' }}">
+      <i class="bi bi-upload"></i> Upload Bukti Cuti
+    </a>
+  @endif
 
   <hr class="border-light mx-3">
-  <a href="/logout" class="nav-link"><i class="bi bi-box-arrow-right"></i> Logout</a>
+
+  <a href="/logout" class="nav-link">
+    <i class="bi bi-box-arrow-right"></i> Logout
+  </a>
 </div>
+
 
 <!-- Main Content -->
 <div class="main-content">
@@ -125,7 +135,15 @@
     Halo, {{ session('user_name') }} Selamat datang di aplikasi pengajuan cuti divisi Building Management</a>
   </div>
   <div class="alert-blue mt-2">
-    <i class="bi bi-info-circle"></i> <b>Catatan:</b> Pengajuan cuti dapat dilakukan maksimal 14 hari sebelum tanggal pengajuan cuti kamu.
+  @if($role == 0)
+    <i class="bi bi-info-circle"></i> <b>Catatan:</b> Kamu dapat mengajukan cuti maksimal hingga 14 hari sebelum tanggal cuti yang diinginkan. Pastikan pengajuan dilakukan tepat waktu.
+  @elseif($role == 1)
+      <i class="bi bi-info-circle"></i> <b>Catatan:</b> Sebagai Team Leader, kamu bertugas meninjau dan menyetujui pengajuan cuti dari staff di halaman Approval Cuti.
+  @elseif($role == 2)
+      <i class="bi bi-info-circle"></i> <b>Catatan:</b> Sebagai Building Manager, kamu bertanggung jawab memberikan persetujuan akhir atas pengajuan cuti yang telah diverifikasi oleh Team Leader.
+  @elseif($role == 3)
+      <i class="bi bi-info-circle"></i> <b>Catatan:</b> Sebagai Staff Admin, kamu memiliki akses untuk memantau dan mengelola bukti file pengajuan cuti seluruh karyawan.
+  @endif
   </div>
 
   <!-- Statistics Section -->
@@ -171,9 +189,13 @@
             <p class="mb-1 text-muted">Staff Name&nbsp;: <strong>{{ session('user_name') }}</strong></p>
             <p class="mb-1 text-muted">Departure&nbsp;&nbsp;&nbsp;: <strong>{{ session('division') }}</strong></p>
             <p class="mb-1 text-muted">Position&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: 
-                <strong>
-                    {{ session('role') == 1 ? 'Team Leader' : (session('role') == 2 ? 'Building Manager' : 'Staff Building') }}
-                </strong>
+            <strong>
+                {{
+                    session('role') == 1 ? 'Team Leader' :
+                    (session('role') == 2 ? 'Building Manager' :
+                    (session('role') == 3 ? 'Staff Admin' : 'Staff Building'))
+                }}
+            </strong>
             </p>
           </div>
         </div>

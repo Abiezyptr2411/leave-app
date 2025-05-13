@@ -89,18 +89,35 @@
 <!-- Sidebar -->
 <div class="sidebar">
   <h5 class="text-center mb-4">E-Leave | System App</h5>
-  <a href="/dashboard" class="nav-link active"><i class="bi bi-speedometer2"></i> Dashboard</a>
-  <a href="/cuti" class="nav-link"><i class="bi bi-receipt"></i> Leave Histories</a>
+
+  <a href="/dashboard" class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}">
+    <i class="bi bi-bank2"></i> Dashboard
+  </a>
+
+  <a href="/cuti" class="nav-link {{ request()->is('cuti') ? 'active' : '' }}">
+    <i class="bi bi-calendar2-check"></i> Leave Histories
+  </a>
+
+  @if (session('role') == 3)
+    <a href="/document-upload" class="nav-link {{ request()->is('document-upload') ? 'active' : '' }}">
+      <i class="bi bi-upload"></i> Document Upload
+    </a>
+  @endif
+
   <hr class="border-light mx-3">
-  <a href="/logout" class="nav-link"><i class="bi bi-box-arrow-right"></i> Logout</a>
+
+  <a href="/logout" class="nav-link">
+    <i class="bi bi-box-arrow-right"></i> Logout
+  </a>
 </div>
+
 
 <!-- Main Content -->
 <div class="main-content">
   <!-- Top Bar -->
   <div class="topbar">
-    <div><strong>Selamat datang, {{ session('user_name') }}</strong></div>
-    <div class="text-muted">cuti@sistem.com</div>
+    <div><strong>Daftar Permohonan Cuti Karyawan</strong></div>
+    <div class="text-muted">Version 1.0.0</div>
   </div>
 
   <!-- Flash Message -->
@@ -165,7 +182,7 @@
       </div>
     </div>
 
-    @if(session('role') != 1) 
+    @if(session('role') == 0) 
     <button type="button" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#cutiModal">
       <i class="bi bi-plus-circle me-1"></i> Ajukan Cuti
     </button>

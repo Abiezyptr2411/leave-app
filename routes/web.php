@@ -20,7 +20,12 @@ Route::post('/cuti', [CutiController::class, 'store']);
 Route::get('/cuti/{id}', [CutiController::class, 'show'])->name('cuti.show');
 Route::post('/cuti/approve/{id}', [CutiController::class, 'approve'])->name('cuti.approve');
 Route::post('/cuti/{id}/reject', [CutiController::class, 'reject'])->name('cuti.reject');
+
 Route::get('/document-upload', [CutiController::class, 'uploadList']); 
+Route::post('/cuti/upload-file', [CutiController::class, 'uploadFile'])->name('cuti.uploadFile');
+
+Route::post('/cuti/upload-file', [CutiController::class, 'uploadFile'])->name('cuti.uploadFile');
+Route::post('/document-upload', [CutiController::class, 'uploadFile'])->name('document.uploadFile');
 
 Route::get('/register', [AuthController::class, 'registerForm']);
 Route::post('/register', [AuthController::class, 'register']);
