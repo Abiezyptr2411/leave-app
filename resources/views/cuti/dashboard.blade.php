@@ -248,21 +248,16 @@
     </div>
   </div>
 
-  <!-- Chart -->
-  <div class="row mt-4">
-    <div class="col-md-12">
-      <div class="card">
-        <div class="card-body">
-          <div id="transactionChart" style="height: 400px;"></div>
-          <div id="chartData"
-              data-labels='@json($chartData->pluck("status_label"))'
-              data-values='@json($chartData->pluck("total"))'>
-          </div>
-        </div>
-      </div>
-    </div>
+  <br>
 
-  </div>
+  <!-- Chart -->
+  <div id="chartData"
+     data-labels="{{ $chartData->pluck('label') }}"
+     data-values="{{ $chartData->pluck('value') }}">
+</div>
+
+<div id="transactionChart" style="width: 100%; height: 400px;"></div>
+
 </div>
 
 <!-- Scripts -->
@@ -271,45 +266,54 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script>
-  $(document).ready(function () {
-    const labels = $('#chartData').data('labels');
-    const values = $('#chartData').data('values');
-    const numericValues = values.map(value => parseFloat(value));
-    const pieData = labels.map((label, index) => {
-        return { name: label, y: numericValues[index] };
-    });
+    $(document).ready(function () {
+        const role = @json($role); 
 
-    Highcharts.chart('transactionChart', {
-        chart: {
-            type: 'pie'
-        },
-        title: {
-            text: 'Statistik Pengajuan Cuti (Berdasarkan Status)'
-        },
-        tooltip: {
-            pointFormat: '<b>{point.name}</b>: {point.y} cuti ({point.percentage:.1f}%)'
-        },
-        plotOptions: {
-            pie: {
-                allowPointSelect: true,
-                cursor: 'pointer',
-                dataLabels: {
-                    enabled: true,
-                    format: '<b>{point.name}</b>: {point.y}'
+        const labels = $('#chartData').data('labels');
+        const values = $('#chartData').data('values');
+        const numericValues = values.map(value => parseFloat(value));
+
+        const pieData = labels.map((label, index) => {
+            return { name: label, y: numericValues[index] };
+        });
+
+        const chartTitle = role === 0
+            ? 'Statistik Cuti Anda (Sisa vs Terpakai)'
+            : 'Statistik Pengajuan Cuti (Berdasarkan Status)';
+
+        Highcharts.chart('transactionChart', {
+            chart: {
+                type: 'pie'
+            },
+            title: {
+                text: chartTitle
+            },
+            tooltip: {
+                pointFormat: '<b>{point.name}</b>: {point.y} cuti ({point.percentage:.1f}%)'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>: {point.y}'
+                    }
                 }
+            },
+            series: [{
+                name: 'Jumlah Cuti',
+                colorByPoint: true,
+                data: pieData
+            }],
+            credits: {
+                enabled: false
             }
-        },
-        series: [{
-            name: 'Jumlah Cuti',
-            colorByPoint: true,
-            data: pieData
-        }],
-        credits: {
-            enabled: false
-        }
+        });
     });
-  });
 </script>
+
+
 
 <script>
     // Approve

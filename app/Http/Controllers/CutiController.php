@@ -15,6 +15,105 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class CutiController extends Controller
 {
+    // public function index()
+    // {
+    //     $userId = session('user_id');
+    //     $role = session('role');
+
+    //     if (in_array($role, [1, 2, 3])) {
+    //         $totalCuti = Cuti::count();
+    //         $cutiDisetujui = Cuti::whereIn('status', ['disetujui_lead', 'disetujui_bm', 'disetujui'])->count();
+    //         $cutiDitolak = Cuti::where('status', 'ditolak')->count();
+    //         $cutiPending = Cuti::where('status', 'pending')->count();
+
+    //         $chartData = Cuti::selectRaw("
+    //             CASE
+    //                 WHEN status = 'disetujui_lead' THEN 'Disetujui oleh Lead'
+    //                 WHEN status = 'disetujui_bm' THEN 'Disetujui oleh Building Manager'
+    //                 WHEN status = 'disetujui' THEN 'Disetujui Final'
+    //                 WHEN status = 'ditolak' THEN 'Cuti Ditolak'
+    //                 WHEN status = 'pending' THEN 'Menunggu Konfirmasi'
+    //                 ELSE 'Status Tidak Dikenal'
+    //             END as status_label,
+    //             COUNT(*) as total
+    //         ")
+    //         ->whereMonth('created_at', now()->month)
+    //         ->groupBy('status_label')
+    //         ->get();
+
+
+    //         $cutiPendingList = Cuti::latest()
+    //             ->where(function ($query) use ($role) {
+    //                 if ($role == 2) {
+    //                     $query->where('status', 'disetujui_lead');
+    //                 } else {
+    //                     $query->where('status', 'pending');
+    //                 }
+    //             })
+    //             ->get();
+    //     } else {
+    //         $totalCuti = Cuti::where('user_id', $userId)->count();
+    //         $cutiDisetujui = Cuti::where('user_id', $userId)->whereIn('status', ['disetujui_lead', 'disetujui_bm', 'disetujui'])->count();
+    //         $cutiDitolak = Cuti::where('user_id', $userId)->where('status', 'ditolak')->count();
+    //         $cutiPending = Cuti::where('user_id', $userId)->where('status', 'pending')->count();
+
+    //         $chartData = Cuti::where('user_id', $userId)
+    //             ->selectRaw("
+    //                 CASE
+    //                     WHEN status = 'disetujui_lead' THEN 'Diproses ke Building Manager'
+    //                     WHEN status = 'disetujui_bm' THEN 'Disetujui oleh Building Manager'
+    //                     WHEN status = 'disetujui' THEN 'Cuti Disetujui'
+    //                     WHEN status = 'ditolak' THEN 'Cuti Ditolak'
+    //                     WHEN status = 'pending' THEN 'Menunggu Konfirmasi'
+    //                     ELSE 'Status Tidak Dikenal'
+    //                 END as status_label,
+    //                 COUNT(*) as total
+    //             ")
+    //             ->whereMonth('created_at', now()->month)
+    //             ->groupBy('status_label')
+    //             ->get();
+
+    //         $cutiPendingList = Cuti::where('user_id', $userId)
+    //             ->latest()
+    //             ->get();
+    //     }
+
+    //     $cutiPendingList = $cutiPendingList->transform(function ($cuti) {
+    //         switch ($cuti->status) {
+    //             case 'disetujui_lead':
+    //                 $cuti->status_label = 'Diproses ke Building Manager';
+    //                 $cuti->status_badge = 'bg-danger-soft';
+    //                 break;
+    //             case 'disetujui_bm':
+    //                 $cuti->status_label = 'Disetujui oleh Building Manager';
+    //                 $cuti->status_badge = 'bg-success-soft';
+    //                 break;
+    //             case 'disetujui':
+    //                 $cuti->status_label = 'Cuti Disetujui';
+    //                 $cuti->status_badge = 'bg-success-soft';
+    //                 break;
+    //             case 'ditolak':
+    //                 $cuti->status_label = 'Cuti Tidak Disetujui';
+    //                 $cuti->status_badge = 'bg-danger-soft';
+    //                 break;
+    //             case 'pending':
+    //                 $cuti->status_label = 'Menunggu Konfirmasi';
+    //                 $cuti->status_badge = 'bg-warning-soft';
+    //                 break;
+    //             default:
+    //                 $cuti->status_label = 'Status Tidak Dikenal';
+    //                 $cuti->status_badge = 'bg-danger-soft';
+    //                 break;
+    //         }
+
+    //         return $cuti;
+    //     });
+
+    //     return view('cuti.dashboard', compact(
+    //         'totalCuti', 'cutiDisetujui', 'cutiDitolak', 'cutiPending', 'chartData', 'cutiPendingList', 'role'
+    //     ));
+    // }
+
     public function index()
     {
         $userId = session('user_id');
@@ -34,13 +133,12 @@ class CutiController extends Controller
                     WHEN status = 'ditolak' THEN 'Cuti Ditolak'
                     WHEN status = 'pending' THEN 'Menunggu Konfirmasi'
                     ELSE 'Status Tidak Dikenal'
-                END as status_label,
-                COUNT(*) as total
+                END as label,
+                COUNT(*) as value
             ")
             ->whereMonth('created_at', now()->month)
-            ->groupBy('status_label')
+            ->groupBy('label')
             ->get();
-
 
             $cutiPendingList = Cuti::latest()
                 ->where(function ($query) use ($role) {
@@ -57,21 +155,14 @@ class CutiController extends Controller
             $cutiDitolak = Cuti::where('user_id', $userId)->where('status', 'ditolak')->count();
             $cutiPending = Cuti::where('user_id', $userId)->where('status', 'pending')->count();
 
-            $chartData = Cuti::where('user_id', $userId)
-                ->selectRaw("
-                    CASE
-                        WHEN status = 'disetujui_lead' THEN 'Diproses ke Building Manager'
-                        WHEN status = 'disetujui_bm' THEN 'Disetujui oleh Building Manager'
-                        WHEN status = 'disetujui' THEN 'Cuti Disetujui'
-                        WHEN status = 'ditolak' THEN 'Cuti Ditolak'
-                        WHEN status = 'pending' THEN 'Menunggu Konfirmasi'
-                        ELSE 'Status Tidak Dikenal'
-                    END as status_label,
-                    COUNT(*) as total
-                ")
-                ->whereMonth('created_at', now()->month)
-                ->groupBy('status_label')
-                ->get();
+            $cutiTerpakai = $cutiDisetujui;
+            $totalKuotaCuti = 12;
+            $sisaCuti = $totalKuotaCuti - $cutiTerpakai;
+
+            $chartData = collect([
+                ['label' => 'Sisa Cuti', 'value' => $sisaCuti],
+                ['label' => 'Cuti Terpakai', 'value' => $cutiTerpakai],
+            ]);
 
             $cutiPendingList = Cuti::where('user_id', $userId)
                 ->latest()

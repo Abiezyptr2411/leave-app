@@ -195,6 +195,7 @@
     <table class="table table-bordered table-hover align-middle">
       <thead class="table-light">
         <tr>
+          <th>No Pengajuan</th>
           <th>Nama Lengkap</th>
           <th>Alasan</th>
           <th>Tgl Mulai</th>
@@ -206,6 +207,7 @@
       <tbody>
     @forelse($cutis as $c)
     <tr>
+        <td>{{ $c->kode }}</td>
         <td>{{ $c->user->name ?? '-' }}</td>
         <td>{{ $c->alasan }}</td>
         <td>{{ \Carbon\Carbon::parse($c->tanggal_mulai)->format('d M Y') }}</td>

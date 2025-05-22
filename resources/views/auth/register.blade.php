@@ -73,38 +73,49 @@
             </small>
         </div>
 
-        <form method="POST" action="/register" enctype="multipart/form-data">
-            @csrf
-            <div class="mb-3">
-                <label class="form-label">Nama Lengkap</label>
-                <input type="text" name="name" class="form-control" required>
-                <input type="hidden" name="division" value="Building Management">
-            </div>
+      <form method="POST" action="/register" enctype="multipart/form-data">
+        @csrf
+        <div class="mb-3">
+            <label class="form-label">Nama Lengkap</label>
+            <input type="text" name="name" class="form-control" required>
+            <input type="hidden" name="division" value="Building Management">
+        </div>
 
-            <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input type="email" name="email" class="form-control" required>
-            </div>
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-control" required>
+        </div>
 
-            <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input type="password" name="password" class="form-control" required>
-            </div>
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" required>
+        </div>
 
-            <div class="mb-3">
-                <label class="form-label">Konfirmasi Password</label>
-                <input type="password" name="password_confirmation" class="form-control" required>
-            </div>
+        <div class="mb-3">
+            <label class="form-label">Konfirmasi Password</label>
+            <input type="password" name="password_confirmation" class="form-control" required>
+        </div>
 
-            <div class="mb-4">
-                <label class="form-label">Foto Karyawan</label>
-                <input type="file" name="photo" class="form-control">
-            </div>
+        <div class="mb-3">
+            <label class="form-label">Role</label>
+            <select name="role" class="form-control" required>
+                <option value="">-- Pilih Role --</option>
+                <option value="0">Staff</option>
+                <option value="1">Lead</option>
+                <option value="2">Manager</option>
+            </select>
+        </div>
 
-            <div class="d-grid">
-                <button type="submit" class="btn btn-outline-success">Daftar</button>
-            </div>
-        </form>
+        <div class="mb-4">
+            <label class="form-label">Foto Karyawan</label>
+            <input type="file" name="photo" class="form-control">
+        </div>
+
+        <div class="d-grid">
+            <button type="submit" class="btn btn-outline-success">Daftar</button>
+        </div>
+    </form>
+
 
         <div class="text-center mt-3">
             <span class="text-muted">Sudah punya akun?</span>
