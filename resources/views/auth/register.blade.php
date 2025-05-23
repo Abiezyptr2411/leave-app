@@ -67,7 +67,7 @@
 
     <div class="login-wrapper">
         <div class="text-center mb-4">
-            <div class="brand-header">PENGAJUAN CUTI</div>
+            <div class="brand-header">Register</div>
             <small class="text-muted" id="liveClock">
                 <?php echo date('D M Y H:i:s'); ?>
             </small>
