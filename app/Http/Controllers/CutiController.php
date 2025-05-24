@@ -377,12 +377,19 @@ class CutiController extends Controller
             return redirect('/cuti')->with('error', 'Masih ada pengajuan cuti yang aktif di tanggal tersebut.');
         }
 
+        $today = Carbon::now()->format('Ymd');
+        $last = DB::table('cuti')
+            ->whereDate('created_at', Carbon::today())
+            ->count();
+        $kode = 'CT-' . $today . '-' . str_pad($last + 1, 3, '0', STR_PAD_LEFT);
+    
         Cuti::create([
             'user_id' => $userId,
             'alasan' => $request->alasan,
             'tanggal_mulai' => $mulai,
             'tanggal_selesai' => $selesai,
-            'status' => 'pending'
+            'status' => 'pending',
+            'kode' => $kode
         ]);
 
         return redirect('/cuti')->with('success', 'Pengajuan cuti berhasil.');

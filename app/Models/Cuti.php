@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Cuti extends Model
 {
     protected $table = 'cuti';
-    protected $fillable = ['user_id', 'alasan', 'tanggal_mulai', 'tanggal_selesai', 'status'];
+    protected $fillable = ['user_id', 'alasan', 'tanggal_mulai', 'tanggal_selesai', 'status', 'kode'];
 
     public function user()
     {
