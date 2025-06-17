@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <title>Bukti Pengajuan Cuti</title>
@@ -81,7 +82,8 @@
             margin-top: 10px;
         }
 
-        .cuti-table th, .cuti-table td {
+        .cuti-table th,
+        .cuti-table td {
             border: 1px solid #000;
             padding: 8px 12px;
             text-align: left;
@@ -101,15 +103,21 @@
             display: inline-block;
             text-align: center;
             vertical-align: top;
+            white-space: nowrap;
+            /* Tambahkan ini */
         }
 
         .signature-name {
             margin-top: 70px;
             text-align: center;
             border-top: 1px solid #000;
-            display: inline-block;
+            display: block;
+            /* ganti dari inline-block */
             padding-top: 5px;
+            white-space: nowrap;
+            /* Cegah pemisahan baris */
         }
+
 
         .note {
             font-size: 12px;
@@ -140,13 +148,14 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- First Page: Legal and Policy Information -->
     <div class="header">
-        <img src="{{ public_path('image.png') }}" alt="Logo" style="width: 180px; height: auto;">
-        <h1>PT. Contoh Perusahaan</h1>
-        <p>Jl. Contoh Alamat No. 123, Jakarta</p>
+        <img src="{{ public_path('SGRS.png') }}" alt="Logo" style="width: 180px; height: auto;">
+        <h1>PT. Swadharma Griyasatya</h1>
+        <p> Jl. RS. Fatmawati Raya No.1, RT.2/RW.2, Cilandak Bar., Kec. Cilandak, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12430</p>
     </div>
 
     <div class="policy-header">
@@ -154,34 +163,26 @@
     </div>
 
     <div class="policy-content">
-        <p>Berikut adalah kebijakan terkait pengajuan cuti yang berlaku di PT. Contoh Perusahaan. Harap dipahami dan dipatuhi oleh seluruh karyawan yang akan mengajukan cuti.</p>
-        
+        <p>Berikut adalah kebijakan terkait pengajuan cuti yang berlaku di PT. Swadharma Griyasatya. Harap dipahami dan dipatuhi oleh seluruh karyawan yang akan mengajukan cuti.</p>
+
         <div class="section-title">Prosedur Pengajuan Cuti</div>
         <ul>
-            <li><strong>Pengajuan:</strong> Karyawan harus mengajukan cuti paling lambat 7 hari sebelum tanggal mulai cuti.</li>
+            <li><strong>Pengajuan:</strong> Karyawan harus mengajukan cuti paling lambat 14 hari sebelum tanggal mulai cuti.</li>
             <li><strong>Persetujuan:</strong> Semua pengajuan cuti harus disetujui oleh atasan langsung.</li>
-            <li><strong>Pengajuan Khusus:</strong> Untuk cuti mendesak, pengajuan dapat dilakukan dengan pemberitahuan kurang dari 7 hari, tetapi tetap memerlukan persetujuan HRD.</li>
+            <li><strong>Pengajuan Khusus:</strong> Untuk cuti mendesak, pengajuan dapat dilakukan dengan pemberitahuan kurang dari 7 hari, tetapi tetap memerlukan persetujuan atasan.</li>
         </ul>
-
-        <div class="section-title">Ketentuan Terkait Cuti</div>
-        <ul>
-            <li><strong>Durasi Cuti:</strong> Cuti tahunan yang tidak digunakan dalam satu tahun tidak akan terakumulasi untuk tahun berikutnya.</li>
-            <li><strong>Gaji:</strong> Cuti tidak akan mempengaruhi gaji bulanan, kecuali untuk cuti yang melebihi jumlah yang diizinkan berdasarkan kebijakan perusahaan.</li>
-        </ul>
-
-        <p>Dengan mengajukan cuti, karyawan menyetujui dan menerima ketentuan serta prosedur yang berlaku.</p>
     </div>
 
     <div class="legal-disclaimer">
         <p>* Dokumen ini berlaku sesuai dengan ketentuan yang berlaku di PT. Contoh Perusahaan dan harus diikuti oleh seluruh karyawan yang mengajukan cuti.</p>
     </div>
-
     <div class="page-break"></div>
-
-    <!-- Second Page: The leave application form -->
-    <h3 style="text-align:center;">BUKTI PENGAJUAN CUTI KARYAWAN</h3>
-
+    <h3 style="text-align:center;">LEMBAR PENGAJUAN CUTI KARYAWAN</h3>
     <table class="info-table">
+        <tr>
+            <td><strong>Nomor Pengajuan</strong></td>
+            <td>: {{ $cuti->kode }}</td>
+        </tr>
         <tr>
             <td><strong>Nama</strong></td>
             <td>: {{ $cuti->user->name }}</td>
@@ -195,7 +196,6 @@
             <td>: {{ \Carbon\Carbon::parse($cuti->created_at)->format('d M Y H:i') }}</td>
         </tr>
     </table>
-
     <table class="cuti-table">
         <thead>
             <tr>
@@ -220,18 +220,18 @@
             <div class="signature-name">{{ $cuti->user->name }}</div>
         </div>
         <div>
-            <p><b>Atasan</b></p>
-            <div class="signature-name">Irfan Maulana</div>
+            <p><b>LEADER</b></p>
+            <div class="signature-name">RIAN SANTOSO</div>
         </div>
         <div>
-            <p><b>HRD</b></p>
-            <div class="signature-name">Annisa Sariwati</div>
+            <p><b>Building Manager</b></p>
+            <div class="signature-name">Supreratman Gunawan, ST.</div>
         </div>
     </div>
 
     <p class="note">
         * Dokumen ini dicetak secara otomatis melalui sistem dan berlaku sebagai bukti sah pengajuan cuti karyawan.
     </p>
-
 </body>
+
 </html>

@@ -15,105 +15,6 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class CutiController extends Controller
 {
-    // public function index()
-    // {
-    //     $userId = session('user_id');
-    //     $role = session('role');
-
-    //     if (in_array($role, [1, 2, 3])) {
-    //         $totalCuti = Cuti::count();
-    //         $cutiDisetujui = Cuti::whereIn('status', ['disetujui_lead', 'disetujui_bm', 'disetujui'])->count();
-    //         $cutiDitolak = Cuti::where('status', 'ditolak')->count();
-    //         $cutiPending = Cuti::where('status', 'pending')->count();
-
-    //         $chartData = Cuti::selectRaw("
-    //             CASE
-    //                 WHEN status = 'disetujui_lead' THEN 'Disetujui oleh Lead'
-    //                 WHEN status = 'disetujui_bm' THEN 'Disetujui oleh Building Manager'
-    //                 WHEN status = 'disetujui' THEN 'Disetujui Final'
-    //                 WHEN status = 'ditolak' THEN 'Cuti Ditolak'
-    //                 WHEN status = 'pending' THEN 'Menunggu Konfirmasi'
-    //                 ELSE 'Status Tidak Dikenal'
-    //             END as status_label,
-    //             COUNT(*) as total
-    //         ")
-    //         ->whereMonth('created_at', now()->month)
-    //         ->groupBy('status_label')
-    //         ->get();
-
-
-    //         $cutiPendingList = Cuti::latest()
-    //             ->where(function ($query) use ($role) {
-    //                 if ($role == 2) {
-    //                     $query->where('status', 'disetujui_lead');
-    //                 } else {
-    //                     $query->where('status', 'pending');
-    //                 }
-    //             })
-    //             ->get();
-    //     } else {
-    //         $totalCuti = Cuti::where('user_id', $userId)->count();
-    //         $cutiDisetujui = Cuti::where('user_id', $userId)->whereIn('status', ['disetujui_lead', 'disetujui_bm', 'disetujui'])->count();
-    //         $cutiDitolak = Cuti::where('user_id', $userId)->where('status', 'ditolak')->count();
-    //         $cutiPending = Cuti::where('user_id', $userId)->where('status', 'pending')->count();
-
-    //         $chartData = Cuti::where('user_id', $userId)
-    //             ->selectRaw("
-    //                 CASE
-    //                     WHEN status = 'disetujui_lead' THEN 'Diproses ke Building Manager'
-    //                     WHEN status = 'disetujui_bm' THEN 'Disetujui oleh Building Manager'
-    //                     WHEN status = 'disetujui' THEN 'Cuti Disetujui'
-    //                     WHEN status = 'ditolak' THEN 'Cuti Ditolak'
-    //                     WHEN status = 'pending' THEN 'Menunggu Konfirmasi'
-    //                     ELSE 'Status Tidak Dikenal'
-    //                 END as status_label,
-    //                 COUNT(*) as total
-    //             ")
-    //             ->whereMonth('created_at', now()->month)
-    //             ->groupBy('status_label')
-    //             ->get();
-
-    //         $cutiPendingList = Cuti::where('user_id', $userId)
-    //             ->latest()
-    //             ->get();
-    //     }
-
-    //     $cutiPendingList = $cutiPendingList->transform(function ($cuti) {
-    //         switch ($cuti->status) {
-    //             case 'disetujui_lead':
-    //                 $cuti->status_label = 'Diproses ke Building Manager';
-    //                 $cuti->status_badge = 'bg-danger-soft';
-    //                 break;
-    //             case 'disetujui_bm':
-    //                 $cuti->status_label = 'Disetujui oleh Building Manager';
-    //                 $cuti->status_badge = 'bg-success-soft';
-    //                 break;
-    //             case 'disetujui':
-    //                 $cuti->status_label = 'Cuti Disetujui';
-    //                 $cuti->status_badge = 'bg-success-soft';
-    //                 break;
-    //             case 'ditolak':
-    //                 $cuti->status_label = 'Cuti Tidak Disetujui';
-    //                 $cuti->status_badge = 'bg-danger-soft';
-    //                 break;
-    //             case 'pending':
-    //                 $cuti->status_label = 'Menunggu Konfirmasi';
-    //                 $cuti->status_badge = 'bg-warning-soft';
-    //                 break;
-    //             default:
-    //                 $cuti->status_label = 'Status Tidak Dikenal';
-    //                 $cuti->status_badge = 'bg-danger-soft';
-    //                 break;
-    //         }
-
-    //         return $cuti;
-    //     });
-
-    //     return view('cuti.dashboard', compact(
-    //         'totalCuti', 'cutiDisetujui', 'cutiDitolak', 'cutiPending', 'chartData', 'cutiPendingList', 'role'
-    //     ));
-    // }
-
     public function index()
     {
         $userId = session('user_id');
@@ -136,9 +37,9 @@ class CutiController extends Controller
                 END as label,
                 COUNT(*) as value
             ")
-            ->whereMonth('created_at', now()->month)
-            ->groupBy('label')
-            ->get();
+                ->whereMonth('created_at', now()->month)
+                ->groupBy('label')
+                ->get();
 
             $cutiPendingList = Cuti::latest()
                 ->where(function ($query) use ($role) {
@@ -201,7 +102,13 @@ class CutiController extends Controller
         });
 
         return view('cuti.dashboard', compact(
-            'totalCuti', 'cutiDisetujui', 'cutiDitolak', 'cutiPending', 'chartData', 'cutiPendingList', 'role'
+            'totalCuti',
+            'cutiDisetujui',
+            'cutiDitolak',
+            'cutiPending',
+            'chartData',
+            'cutiPendingList',
+            'role'
         ));
     }
 
@@ -209,44 +116,44 @@ class CutiController extends Controller
     {
         if (!session('user_id')) return redirect('/login');
         $role = session('role');
-        $userId = session('user_id'); 
-    
+        $userId = session('user_id');
+
         $query = Cuti::with('user');
-    
+
         if ($role == 1 || $role == 2 || $role == 3) {
             $query->whereIn('status', ['pending', 'disetujui_lead', 'disetujui_bm', 'ditolak']);
         } else {
             $query->where('user_id', $userId);
         }
-    
+
         if ($request->has('search') && $request->search != '') {
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('alasan', 'like', '%' . $searchTerm . '%')
-                ->orWhereHas('user', function ($q2) use ($searchTerm) {
-                    $q2->where('name', 'like', '%' . $searchTerm . '%');
-                });
+                    ->orWhereHas('user', function ($q2) use ($searchTerm) {
+                        $q2->where('name', 'like', '%' . $searchTerm . '%');
+                    });
             });
         }
-    
+
         // Filter berdasarkan status cuti
         if ($request->has('status') && $request->status != '') {
             $query->where('status', $request->status);
         }
-    
+
         // Filter berdasarkan tanggal mulai
         if ($request->filled('tanggal_mulai')) {
             $query->whereDate('tanggal_mulai', '>=', $request->tanggal_mulai);
         }
-    
+
         // Filter berdasarkan tanggal selesai
         if ($request->filled('tanggal_selesai')) {
             $query->whereDate('tanggal_selesai', '<=', $request->tanggal_selesai);
         }
-    
+
         // Ambil data cuti yang sudah disaring sesuai kondisi
         $cutis = $query->orderBy('created_at', 'desc')->get();
-    
+
         $cutis->transform(function ($cuti) {
             switch ($cuti->status) {
                 case 'disetujui_lead':
@@ -265,21 +172,21 @@ class CutiController extends Controller
                     $cuti->status_label = 'Status Tidak Dikenal';
                     break;
             }
-    
+
             return $cuti;
         });
-    
+
         return view('cuti.index', compact('cutis'));
     }
-    
+
     public function uploadList(Request $request)
     {
         if (!session('user_id')) return redirect('/login');
-        $role = session('role'); 
+        $role = session('role');
 
-        $query = Cuti::with('user', 'uploadedDocuments'); 
+        $query = Cuti::with('user', 'uploadedDocuments');
 
-        if ($role != 1 && $role != 3) {  
+        if ($role != 1 && $role != 3) {
             $query->where('user_id', session('user_id'));
         }
 
@@ -287,9 +194,9 @@ class CutiController extends Controller
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('alasan', 'like', '%' . $searchTerm . '%')
-                ->orWhereHas('user', function ($q2) use ($searchTerm) {
-                    $q2->where('name', 'like', '%' . $searchTerm . '%');
-                });
+                    ->orWhereHas('user', function ($q2) use ($searchTerm) {
+                        $q2->where('name', 'like', '%' . $searchTerm . '%');
+                    });
             });
         }
 
@@ -339,9 +246,9 @@ class CutiController extends Controller
         $selesai = Carbon::parse($request->tanggal_selesai);
         $hariIni = Carbon::now();
 
-        // Validasi cuti harus diajukan minimal 14 hari sebelum tanggal mulai
-        if ($mulai->lt($hariIni->copy()->addDays(14))) {
-            return redirect('/cuti')->with('error', 'Pengajuan cuti harus dilakukan minimal 14 hari sebelum tanggal mulai cuti.');
+        // Validasi cuti harus diajukan minimal 7 hari sebelum tanggal mulai
+        if ($mulai->lt($hariIni->copy()->addDays(7))) {
+            return redirect('/cuti')->with('error', 'Pengajuan cuti harus dilakukan minimal 7 hari sebelum tanggal mulai cuti.');
         }
 
         // Validasi tanggal mulai tidak lebih besar dari tanggal selesai
@@ -362,13 +269,13 @@ class CutiController extends Controller
         // Validasi bentrok tanggal cuti 
         $bentrok = DB::table('cuti')
             ->where('user_id', $userId)
-            ->whereIn('status', ['pending', 'disetujui']) 
+            ->whereIn('status', ['pending', 'disetujui'])
             ->where(function ($query) use ($mulai, $selesai) {
                 $query->whereBetween('tanggal_mulai', [$mulai, $selesai])
                     ->orWhereBetween('tanggal_selesai', [$mulai, $selesai])
-                    ->orWhere(function($q) use ($mulai, $selesai) {
+                    ->orWhere(function ($q) use ($mulai, $selesai) {
                         $q->where('tanggal_mulai', '<=', $mulai)
-                        ->where('tanggal_selesai', '>=', $selesai);
+                            ->where('tanggal_selesai', '>=', $selesai);
                     });
             })
             ->exists();
@@ -377,16 +284,23 @@ class CutiController extends Controller
             return redirect('/cuti')->with('error', 'Masih ada pengajuan cuti yang aktif di tanggal tersebut.');
         }
 
+        $today = Carbon::now()->format('Ymd');
+        $last = DB::table('cuti')
+            ->whereDate('created_at', Carbon::today())
+            ->count();
+        $kode = 'CT-' . $today . '-' . str_pad($last + 1, 3, '0', STR_PAD_LEFT);
+
         Cuti::create([
             'user_id' => $userId,
             'alasan' => $request->alasan,
             'tanggal_mulai' => $mulai,
             'tanggal_selesai' => $selesai,
-            'status' => 'pending'
+            'status' => 'pending',
+            'kode' => $kode
         ]);
 
         return redirect('/cuti')->with('success', 'Pengajuan cuti berhasil.');
-    } 
+    }
 
     public function show($id)
     {
@@ -395,24 +309,23 @@ class CutiController extends Controller
         $cuti = Cuti::with('user')->findOrFail($id);
 
         $pdf = Pdf::loadView('cuti.pdf', compact('cuti'));
-        return $pdf->download('bukti_pengajuan_cuti_'.$cuti->id.'.pdf');
+        return $pdf->download('bukti_pengajuan_cuti_' . $cuti->id . '.pdf');
     }
 
     public function approve($id)
     {
         $cuti = Cuti::findOrFail($id);
-        $currentUserRole = session('role'); 
+        $currentUserRole = session('role');
 
-        if ($currentUserRole == 1) { 
+        if ($currentUserRole == 1) {
             if ($cuti->status == 'pending') {
-                $cuti->status = 'disetujui_lead'; 
+                $cuti->status = 'disetujui_lead';
                 $cuti->save();
                 return redirect()->back()->with('success', 'Cuti berhasil disetujui sementara oleh Lead.');
             }
-        }
-        elseif ($currentUserRole == 2) {
+        } elseif ($currentUserRole == 2) {
             if ($cuti->status == 'disetujui_lead') {
-                $cuti->status = 'disetujui_bm'; 
+                $cuti->status = 'disetujui_bm';
                 $cuti->save();
                 return redirect()->back()->with('success', 'Cuti berhasil disetujui oleh Building Manager.');
             }
@@ -435,38 +348,38 @@ class CutiController extends Controller
         if (!session('user_id')) {
             return redirect('/login');
         }
-    
+
         $query = Cuti::query();
-    
+
         if (session('role') != 1) {
             $query->where('user_id', session('user_id'));
         }
-    
+
         if ($request->filled('search')) {
             $query->where('alasan', 'like', '%' . $request->search . '%');
         }
-    
+
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
-    
+
         if ($request->filled('tanggal_mulai')) {
             $query->whereDate('tanggal_mulai', '>=', $request->tanggal_mulai);
         }
-    
+
         if ($request->filled('tanggal_selesai')) {
             $query->whereDate('tanggal_selesai', '<=', $request->tanggal_selesai);
         }
-    
+
         $cutis = $query->orderBy('created_at', 'desc')->get();
-    
+
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-    
+
         // Set header kolom
         $headers = ['No', 'Nama User', 'Alasan Cuti', 'Tanggal Mulai', 'Tanggal Selesai', 'Status'];
         $sheet->fromArray($headers, null, 'A1');
-    
+
         $row = 2;
         foreach ($cutis as $index => $cuti) {
             $sheet->setCellValue('A' . $row, $index + 1);
@@ -477,18 +390,18 @@ class CutiController extends Controller
             $sheet->setCellValue('F' . $row, $cuti->status);
             $row++;
         }
-    
+
         foreach (range('A', 'G') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
-    
+
         $filename = 'cuti_export_' . now()->format('Ymd_His') . '.xlsx';
-    
+
         $writer = new Xlsx($spreadsheet);
-        $response = response()->streamDownload(function() use ($writer) {
+        $response = response()->streamDownload(function () use ($writer) {
             $writer->save('php://output');
         }, $filename);
-    
+
         $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         return $response;
     }
@@ -512,7 +425,7 @@ class CutiController extends Controller
         }
 
         $cutiBerjalan = Cuti::where('user_id', $user->id)
-            ->whereIn('status', ['pending', 'rejected']) 
+            ->whereIn('status', ['pending', 'rejected'])
             ->whereDate('tanggal_selesai', '>=', Carbon::today())
             ->exists();
 
@@ -553,18 +466,18 @@ class CutiController extends Controller
             $rowData = array_combine($header, $row);
 
             if (!isset($rowData['alasan cuti']) || !isset($rowData['tanggal mulai']) || !isset($rowData['tanggal selesai'])) {
-                continue; 
+                continue;
             }
 
             try {
                 $mulai = Carbon::parse($rowData['tanggal mulai']);
                 $selesai = Carbon::parse($rowData['tanggal selesai']);
             } catch (\Exception $e) {
-                continue; 
+                continue;
             }
 
             if ($mulai->gt($selesai)) {
-                continue; 
+                continue;
             }
 
             try {
@@ -576,7 +489,7 @@ class CutiController extends Controller
                     'status' => 'pending',
                 ]);
             } catch (\Exception $e) {
-                continue; 
+                continue;
             }
         }
 
