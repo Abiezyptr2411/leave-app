@@ -132,12 +132,6 @@
       <i class="bi bi-calendar2-check"></i> Leave Histories
     </a>
 
-    @if (session('role') == 3)
-    <a href="/document-upload" class="nav-link {{ request()->is('cuti/upload') ? 'active' : '' }}">
-      <i class="bi bi-upload"></i> Upload Bukti Cuti
-    </a>
-    @endif
-
     <hr class="border-light mx-3">
 
     <a href="/logout" class="nav-link">
