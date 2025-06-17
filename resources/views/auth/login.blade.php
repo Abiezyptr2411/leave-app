@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Authentikasi | E-Cuti</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -21,8 +22,9 @@
             background: #ffffff;
             color: #2c3e50;
             border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-            margin: 20px; /* Tambahan agar tidak nempel di sisi saat HP */
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            margin: 20px;
+            /* Tambahan agar tidak nempel di sisi saat HP */
         }
 
         .brand-header {
@@ -33,7 +35,7 @@
 
         .form-control:focus {
             border-color: #0d6efd;
-            box-shadow: 0 0 0 0.2rem rgba(13,110,253,.25);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, .25);
         }
 
         .login-btn {
@@ -63,6 +65,7 @@
         }
     </style>
 </head>
+
 <body class="d-flex align-items-center justify-content-center min-vh-100">
 
     <div class="login-wrapper">
@@ -86,6 +89,7 @@
             <div class="d-grid">
                 <button type="submit" class="btn btn-outline-success">Masuk</button>
             </div>
+
         </form>
 
         <!-- <div class="text-center mt-4">
@@ -97,6 +101,7 @@
     </div>
 
 </body>
+
 </html>
 
 @if(session('error'))
@@ -116,15 +121,20 @@
 @endif
 
 <script>
-  function updateClock() {
-    const now = new Date();
-    const options = { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' };
-    const datePart = now.toLocaleDateString('en-US', options);
-    const timePart = now.toLocaleTimeString('en-GB'); // 24-hour format with seconds
+    function updateClock() {
+        const now = new Date();
+        const options = {
+            weekday: 'short',
+            month: 'short',
+            day: '2-digit',
+            year: 'numeric'
+        };
+        const datePart = now.toLocaleDateString('en-US', options);
+        const timePart = now.toLocaleTimeString('en-GB'); // 24-hour format with seconds
 
-    document.getElementById('liveClock').innerText = `${datePart} ${timePart}`;
-  }
+        document.getElementById('liveClock').innerText = `${datePart} ${timePart}`;
+    }
 
-  setInterval(updateClock, 1000); // Update every 1 second
-  updateClock(); // Run immediately once
+    setInterval(updateClock, 1000); // Update every 1 second
+    updateClock(); // Run immediately once
 </script>

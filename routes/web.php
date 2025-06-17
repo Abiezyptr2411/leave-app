@@ -34,4 +34,5 @@ Route::get('/cuti/export', [CutiController::class, 'export']);
 Route::post('/cuti/import', [CutiController::class, 'import']);
 Route::get('/cuti/template', [CutiController::class, 'template']);
 
-
+Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
+Route::get('/register', [AuthController::class, 'registerForm'])->name('register');

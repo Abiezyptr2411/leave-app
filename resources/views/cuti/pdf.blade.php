@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <title>Bukti Pengajuan Cuti</title>
@@ -81,7 +82,8 @@
             margin-top: 10px;
         }
 
-        .cuti-table th, .cuti-table td {
+        .cuti-table th,
+        .cuti-table td {
             border: 1px solid #000;
             padding: 8px 12px;
             text-align: left;
@@ -101,15 +103,21 @@
             display: inline-block;
             text-align: center;
             vertical-align: top;
+            white-space: nowrap;
+            /* Tambahkan ini */
         }
 
         .signature-name {
             margin-top: 70px;
             text-align: center;
             border-top: 1px solid #000;
-            display: inline-block;
+            display: block;
+            /* ganti dari inline-block */
             padding-top: 5px;
+            white-space: nowrap;
+            /* Cegah pemisahan baris */
         }
+
 
         .note {
             font-size: 12px;
@@ -140,13 +148,14 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- First Page: Legal and Policy Information -->
     <div class="header">
-        <img src="{{ public_path('image.png') }}" alt="Logo" style="width: 180px; height: auto;">
+        <img src="{{ public_path('SGRS.png') }}" alt="Logo" style="width: 180px; height: auto;">
         <h1>PT. Swadharma Griyasatya</h1>
-        <p>Jl. Jend Sudirman Kav 1 Karet Tengsin Tanah Abang Jakarta Pusat DKI Jakarta, RT.10/RW.11, Karet Tengsin, Kecamatan Tanah Abang, Kota Jakarta Pusat.</p>
+        <p> Jl. RS. Fatmawati Raya No.1, RT.2/RW.2, Cilandak Bar., Kec. Cilandak, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12430</p>
     </div>
 
     <div class="policy-header">
@@ -154,8 +163,8 @@
     </div>
 
     <div class="policy-content">
-        <p>Berikut adalah kebijakan terkait pengajuan cuti yang berlaku di PT. Contoh Perusahaan. Harap dipahami dan dipatuhi oleh seluruh karyawan yang akan mengajukan cuti.</p>
-        
+        <p>Berikut adalah kebijakan terkait pengajuan cuti yang berlaku di PT. Swadharma Griyasatya. Harap dipahami dan dipatuhi oleh seluruh karyawan yang akan mengajukan cuti.</p>
+
         <div class="section-title">Prosedur Pengajuan Cuti</div>
         <ul>
             <li><strong>Pengajuan:</strong> Karyawan harus mengajukan cuti paling lambat 14 hari sebelum tanggal mulai cuti.</li>
@@ -170,7 +179,7 @@
     <div class="page-break"></div>
     <h3 style="text-align:center;">LEMBAR PENGAJUAN CUTI KARYAWAN</h3>
     <table class="info-table">
-         <tr>
+        <tr>
             <td><strong>Nomor Pengajuan</strong></td>
             <td>: {{ $cuti->kode }}</td>
         </tr>
@@ -211,16 +220,18 @@
             <div class="signature-name">{{ $cuti->user->name }}</div>
         </div>
         <div>
-            <p><b>Atasan</b></p>
-            <div class="signature-name">Irfan Maulana</div>
+            <p><b>LEADER</b></p>
+            <div class="signature-name">RIAN SANTOSO</div>
         </div>
         <div>
-            <p><b>HRD</b></p>
-            <div class="signature-name">Annisa Sariwati</div>
+            <p><b>Building Manager</b></p>
+            <div class="signature-name">Supreratman Gunawan, ST.</div>
         </div>
     </div>
+
     <p class="note">
         * Dokumen ini dicetak secara otomatis melalui sistem dan berlaku sebagai bukti sah pengajuan cuti karyawan.
     </p>
 </body>
+
 </html>
